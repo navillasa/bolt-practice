@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/navillasa/experiment/storage/boltdb"
+	"github.com/navillasa/bolt-practice/storage/boltdb"
 	"github.com/sirupsen/logrus"
 )
 
