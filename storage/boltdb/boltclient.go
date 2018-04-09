@@ -20,7 +20,7 @@ type Client struct {
 }
 
 func New() (*Client, error) {
-	db, err := bolt.Open("mystery.db", 0600, &bolt.Options{Timeout: defaultTimeout})
+	db, err := bolt.Open("files.db", 0600, &bolt.Options{Timeout: defaultTimeout})
 	if err != nil {
 		return nil, ErrDbOpen
 	}

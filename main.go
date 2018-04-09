@@ -5,10 +5,18 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
+
+	"github.com/navillasa/bolt-practice/routes"
 	"github.com/navillasa/bolt-practice/storage/boltdb"
 
 	"go.uber.org/zap"
 )
+
+type Metadata interface {
+	Get(encryptedPath []string) ([]byte, error)
+	Put(encryptedPath []string, data []byte, oldValHash []byte) error
+	List(startingPath, endingPath []string) (results [][]string, truncated bool, err error)
+}
 
 func main() {
 	logger, err := zap.NewDevelopment()
@@ -27,13 +35,17 @@ func main() {
 		)
 		return
 	}
-
 	defer bdb.DB.Close()
 
-	http.ListenAndServe(":3000", start())
+	file := routes.File{DB: bdb}
+
+	http.ListenAndServe(":3000", start(file))
 }
 
-func start() *httprouter.Router {
+func start(f routes.File) *httprouter.Router {
 	router := httprouter.New()
+
+	router.GET("/file", f.Get)
+
 	return router
 }
