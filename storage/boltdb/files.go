@@ -1,12 +1,45 @@
 package boltdb
 
+import (
+	"encoding/json"
+	"errors"
+	"log"
+
+	"github.com/boltdb/bolt"
+)
+
 type File struct {
-	encryptedPath []string
-	data          []byte
-	oldValHash    []byte
-	results       [][]string
-	truncated     bool
+	EncryptedPath []string
+	Data          []byte
+	OldValHash    []byte
+	Results       [][]string
+	EndingPath    []string
+	Truncated     bool
 }
 
-func (bdb *Client) Get() {
+var (
+	ErrFilenameTaken = errors.New("error filename taken")
+)
+
+func (client *Client) Create(file File) error {
+	return client.DB.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte("files"))
+
+		fileKey := []byte(file.EncryptedPath)
+
+		v := b.Get(fileKey)
+		if v != nil {
+			return ErrFilenameTaken
+		}
+
+		fileBytes, err := json.Marshal(file)
+		if err != nil {
+			log.Println(err)
+		}
+
+		return b.Put(fileKey, fileBytes)
+	})
+}
+
+func (client *Client) Get() {
 }

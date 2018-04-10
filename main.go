@@ -45,6 +45,7 @@ func main() {
 func start(f routes.File) *httprouter.Router {
 	router := httprouter.New()
 
+	router.POST("/files/:name", f.Create)
 	router.GET("/file", f.Get)
 
 	return router
